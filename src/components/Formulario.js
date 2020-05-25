@@ -1,120 +1,73 @@
-import React, {Fragment, useState} from 'react';
-//import * as uuid from 'uuid';
-import {v1 as uuid} from 'uuid';
+import React, {useState} from 'react';
+import PropTypes from 'prop-types';
+import shortid from 'shortid';
+import Error from '../components/Error';
 
 
-const Formulario = ({crearCita}) => {
-//crear citas
-const [cita, actualizarCita]=useState({
-   mascota:'',
-   propietario:'',
-   fecha:'',
-   hora:'',
-   sintomas:''
-});
+const Formulario = ({guardarGasto, guardarCrearGasto}) => {
+    const [nombre, guardarNombre]=useState('');
+    const [cantidad, guardarCantidad]=useState(0);
+    const [error, guardarError]=useState(false);
 
-const [error, actualizarError]=useState(false);
+    //agregar gasto
+    const agregarGasto=e=>{
+        e.preventDefault();
 
-const handleChange=e=>{
-    console.log(e.target.name);
-    actualizarCita({
-       ...cita,
-       [e.target.name]:e.target.value
-    })
-}
-const submitCita=e=>{
-   e.preventDefault(); //ya no envia a con query string
+        //validar
+        if(cantidad<1 || isNaN(cantidad) || nombre.trim()===''){
+            guardarError(true);
+            return;
+        }
+        guardarError(false);
+        //construir el gasto
+        const gasto={
+            nombre,
+            cantidad,
+            id:shortid.generate()
+        }
+        //pasar el gasto al comp principal
+        guardarGasto(gasto);
+        guardarCrearGasto(true);
+        //resetear el form
 
-   //validar
-   if(mascota.trim()==='' || propietario.trim()==='' || fecha.trim()==='' || hora.trim()==='' || sintomas.trim()===''){
-     actualizarError(true);
-     return;//corta la ejecucion para que no pase de aca
-   }
-  //eliminar mensaje error
-  actualizarError(false);
+        guardarNombre('');
+        guardarCantidad(0);
 
-   //asignar un ID
-   cita.id=uuid();
 
-   //crear la cita
-   crearCita(cita);
-
-   //reiniciar el form
-   actualizarCita({
-      mascota:'',
-      propietario:'',
-      fecha:'',
-      hora:'',
-      sintomas:''
-   })
-}
-//Extraer los valores
-
-const {mascota, propietario, fecha, hora, sintomas}=cita;
-
+    }
     return ( 
-		<Fragment>
-      <h1> Crear citas</h1>
-      {error?<p className="alerta-error"> Todos los campos son requeridos</p>:null}
-      <form
-      onSubmit={submitCita}>
-         <label htmlFor="mascota">Nombre Mascotas</label>
-         <input  
-            type="text"
-            name="mascota"
-            className="u-full-width"
-            placeholder="Nombre Mascota"
-            onChange={handleChange}
-            value={mascota}
-         />
+        <form
+        onSubmit={agregarGasto}>
+            <h2> Agregar tus gastos aquí</h2>
+            {error? <Error mensaje="Ambos campos son obligatorios o Presupuesto incorrector"/>:null}
+            <div className="campo">
+                <label htmlFor="">Nombre Gasto</label>
+                <input type="text"
+                    className="u-full-width"
+                    placeholder="Ej. Transporte"
+                    value={nombre}
+                    onChange={e=>guardarNombre(e.target.value)}/>
+            </div>
 
-         <label htmlFor="propietario">Nombre Dueño</label>
-         <input 
-            type="text"
-            name="propietario"
-            className="u-full-width"
-            placeholder="Nombre Dueño"
-            onChange={handleChange}
-            value={propietario}
-
-         />
-
-         <label htmlFor="fecha">Fecha</label>
-         <input 
-            type="date"
-            name="fecha"
-            className="u-full-width"
-            onChange={handleChange}
-            value={fecha}
-         />
-
-         <label htmlFor="hora">Hora</label>
-         <input 
-            type="time"
-            name="hora"
-            className="u-full-width"
-            onChange={handleChange}
-            value={hora}
-
-         />
-
-          <label htmlFor="sintomas">Sintomas</label>
-         <textarea
-         name="sintomas"
-         className="u-full-width"
-         onChange={handleChange}
-         value={sintomas}
-         >
-         </textarea>
-
-         <button
-         type="submit"
-         className="u-full-width button-primary"
-         >Agregar Citas</button>
-
-      </form>
-		</Fragment>
+            <div className="campo">
+                <label htmlFor="">Cantidad Gasto</label>
+                <input type="text"
+                    className="u-full-width"
+                    placeholder="Ej. 300"
+                    value={cantidad}
+                    onChange={e=>guardarCantidad(parseInt(e.target.value, 10))}/>
+            </div>
+            <input 
+                type="submit"
+                className="button-primary u-full-width"
+                value="Agregar Gasto"/>
+        </form>
      );
 }
  
+Formulario.propTypes={
+    guardarGasto: PropTypes.func.isRequired,
+    guardarCrearGasto: PropTypes.func.isRequired
+}
+
 export default Formulario;

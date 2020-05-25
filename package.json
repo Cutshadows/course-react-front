@@ -41,6 +41,7 @@
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "redux": "^4.0.5",
+    "shortid": "^2.2.15",
     "uuid": "^8.0.0"
   }
 }

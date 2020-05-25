@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import Principal from '../components/Principal';
+import Principal from '../pages/Principal';
 
 const App=()=>{
     return(
