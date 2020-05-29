@@ -12,6 +12,11 @@ module.exports={
         publicPath:'/',
     },
     resolve:{
+        alias:{
+            components:path.resolve(__dirname, 'src/components/'),
+            pages:path.resolve(__dirname, 'src/pages/'),
+            scss:path.resolve(__dirname, 'src/assets/styles/')
+        },
         extensions:['.js', '.jsx']
     },
     module:{
