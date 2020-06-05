@@ -32,6 +32,8 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
     "classnames": "^2.2.6",
     "css-loader": "^3.4.2",
     "md5": "^2.2.1",
@@ -40,6 +42,7 @@
     "react-dom": "^16.13.0",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
+    "react-transition-group": "4.4.1",
     "redux": "^4.0.5",
     "shortid": "^2.2.15",
     "uuid": "^8.0.0"
