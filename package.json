@@ -6,12 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:prod": "webpack --mode production",
-    "build:local": "webpack-dev-server --config ./webpack.config.js"
+    "build:local": "webpack-dev-server --config ./webpack.config.js",
+    "watch": "webpack --watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.8.6",
+    "@babel/polyfill": "^7.10.1",
     "@babel/preset-env": "^7.8.6",
     "@babel/preset-react": "^7.8.3",
     "babel-eslint": "^10.1.0",
@@ -32,6 +34,8 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
     "classnames": "^2.2.6",
     "css-loader": "^3.4.2",
     "md5": "^2.2.1",

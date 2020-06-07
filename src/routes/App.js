@@ -1,45 +1,30 @@
-import React, { Fragment, useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import Producto from '../components/Producto';
-import Carrito from '../components/Carrito';
+import React, { useState, useEffect } from 'react';
+import Button from '../pages/Button';
+import '../assets/styles/App.scss';
+
+import styled from '@emotion/styled';
+import Frase from '../components/Frase';
+
+const Contenedor=styled.div`
+    display: flex;
+    align-items:center;
+    padding-top:5rem;
+    flex-direction:column;
+`;
+
+
 
 const App=()=>{
-    //Crear listado de productos , un state y una function que ayude a reescribrir el state
-    const [productos, setProducts ]=useState([
-        { id:1, nombre: 'Camisa ReactJS', precio:50},
-        { id:2, nombre: 'Camisa AngularJS', precio:40},
-        { id:3, nombre: 'Camisa VueJS', precio:30},
-        { id:4, nombre: 'Camisa EntityFramework', precio:20},
-        { id:5, nombre: 'Camisa NodeJS', precio:10}
-    ]);
+    const [frase, guardarFrase]= useState({});
+    
 
-    //State para un carrito de compras
-    const [carrito, addProduct ]=useState([]);
-
-
-
-    const fecha=new Date().getFullYear('YYYY');
     return(
-    <Fragment>
-         <Header titulo="Tienda Virtual" numero={18}/>
-         <h1>Lista de Productos</h1>
-         {productos.map(producto=>(
-             <Producto 
-             producto={producto} 
-             key={producto.id}
-             carrito={carrito}
-             productos={productos}
-             addProduct={addProduct}/>
-
-         ))}
-
-         <Carrito 
-         carrito={carrito}
-         addProduct={addProduct}/>
-         <Footer
-                fecha={fecha}/>   
-    </Fragment>
-)};
+        <Contenedor>
+            <Frase 
+            frase={frase}/>
+            <Button 
+            guardarFrase={guardarFrase} />
+        </Contenedor>
+    )};
 
 export default App;

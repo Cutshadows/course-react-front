@@ -72,7 +72,7 @@ module.exports={
         ),
         new MiniCssExtractPlugin(
             {
-                filename:'assets/[name].css'
+                filename:'assets/styles/[name].css'
             }
         )
     ]
