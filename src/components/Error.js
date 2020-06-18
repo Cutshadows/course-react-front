@@ -1,14 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import styled from '@emotion/styled';
 
+const MensajeError=styled.p`
+    background-color:#B7322C;
+    color: #FFF;
+    padding: 1rem;
+    font-size: 30px;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-align:center;
+    font-family: 'Bebas Neue', cursive;
+`;
 
 const Error = ({mensaje}) => {
-    return ( 
-        <p className="red darken-4 error">{mensaje}</p>
-     );
-}
-Error.propTypes={
-    mensaje:PropTypes.string.isRequired
+    return ( <MensajeError>{mensaje}</MensajeError> );
 }
  
 export default Error;

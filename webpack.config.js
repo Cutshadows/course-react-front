@@ -14,7 +14,10 @@ module.exports={
     resolve:{
         alias:{
             component: path.resolve(__dirname, 'src/components/'), // para poner alias en los componentes y no poner ...
-            pages: path.resolve(__dirname, 'src/pages/')
+            pages: path.resolve(__dirname, 'src/pages/'),
+            hook: path.resolve(__dirname, 'src/hooks/'),
+            style: path.resolve(__dirname, 'src/assets/styles/'),
+            img: path.resolve(__dirname, 'src/assets/img/')
         },
         extensions:['.js', '.jsx']
     },

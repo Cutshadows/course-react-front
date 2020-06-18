@@ -1,85 +1,90 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import styled from '@emotion/styled';
+import useMoneda from 'hook/useMoneda'; 
+import useCriptoMoneda from 'hook/useCriptoMoneda';
+import axios from 'axios'; 
 import Error from './Error';
-import PropTypes from 'prop-types';
-
-
-const Formulario = ({busqueda, guardarBusqueda, guardarConsultar}) => {
-    //state del formulario
-   
-    const [error, guardarError] = useState(false);
-
-    const {ciudad, pais}=busqueda;
-
-    const handleChange = e=>{
-        //actualizar state
-        guardarBusqueda({
-            ...busqueda,
-            [e.target.name]:e.target.value
-        });
+const Buttom= styled.input`
+    margin-top:20px;
+    font-weight:bold;
+    font-size: 20px;
+    padding: 10px;
+    background-color: #66A2FE;
+    border:none;
+    width:100%;
+    border-radius:10px;
+    color: #FFF;
+    transition: background-color .3s ease;  
+    &::hover{
+        background-color:#326AC0;
+        cursor:pointer;
     }
-    //submit
-    const handleSubmit=e=>{
+`;
+
+const Formulario = ({guardarMoneda, guardarCriptoMoneda}) => {
+    //state del listado de criptomonedas
+
+    const [listacripto, saveCriptomonedas]=useState([]);
+    const [error, guardarError]=useState(false);
+
+    const MONEDAS =[
+        {codigo: 'USD', nombre:'Dolar de Estados Unidos'},
+        {codigo: 'CL', nombre:'Pesos Chilenos'},
+        {codigo: 'MXN', nombre:'Peso Mexicano'},
+        {codigo: 'EUR', nombre:'EURO '},
+        {codigo: 'GBP', nombre:'Libra Esterlina'},
+    ];
+    
+    
+    //use moneda custom hooks
+    
+    const [
+        moneda, 
+        SelectMonedas]=useMoneda('Elige tu moneda', '', MONEDAS ); 
+    
+    // use cripto moneda hook    
+    const [
+        criptomoneda, 
+        SelectCripto]=useCriptoMoneda('Elige tu criptomoneda', '', listacripto);
+
+    //Ejecutar llamada a la api
+    useEffect(()=>{
+      const consultarAPI= async ()=>{
+            const url=`https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD`;
+            const result= await axios.get(url);
+
+            saveCriptomonedas(result.data.Data);
+        }
+        consultarAPI(); 
+    }, []);
+
+    const cotizarMoneda=e=>{
         e.preventDefault();
 
-        //validar 
-        if(ciudad.trim()==='' || pais.trim()===''){
+        //validar moneda
+        if(moneda==='' || criptomoneda===''){
             guardarError(true);
             return;
         }
         guardarError(false);
-
-
-        //pasar componente principal
-
-        guardarConsultar(true);
-
+        guardarMoneda(moneda);
+        guardarCriptoMoneda(criptomoneda);
     }
     return ( 
-            <form
-            onSubmit={handleSubmit}> 
-            {error? <Error mensaje="Ambos campos son obligatorios" /> :null} 
-                <div className="input-field col s12">
-                <input
-                    type="text"
-                    name="ciudad"
-                    id="ciudad"
-                    value={ciudad}
-                    onChange={handleChange}
-                    />
-                    <label htmlFor="ciudad">Ciudad:</label>
-                </div>
-                <div className="input-field col s12">
-                <select
-                    name="pais"
-                    id="pais"
-                    value={pais}
-                    onChange={handleChange}
-                    >
-                    <option value="">-- Seleccione un pais --</option>
-                    <option value="US">Estados Unidos</option>
-                    <option value="MX">México</option>
-                    <option value="AR">Argentina</option>
-                    <option value="CO">Colombia</option>
-                    <option value="CR">Costa Rica</option>
-                    <option value="ES">España</option>
-                    <option value="PE">Perú</option>
-                    <option value="CL">Chile</option>
-                    </select>
-                    <label htmlFor="pais">Pais:</label>
-                </div>
-                <div className="input-field col s12">
-                    <input 
-                    value="Buscar Clima"
-                    type="submit" 
-                    className="waves-effect waves-light btn-block btn-large yellow accent-4"/>
-                </div>
-            
-            </form>
+        <form 
+            onSubmit={cotizarMoneda}>
+            { error? 
+                <Error mensaje='Todos los campos son obligatorios'/>
+                : null
+            }
+            <SelectMonedas />
+            <SelectCripto />
+            <Buttom
+                type="submit"
+                value="Calcular" />
+        </form>
+
      );
 }
- Formulario.propTypes={
-    busqueda: PropTypes.object.isRequired,
-    guardarBusqueda: PropTypes.func.isRequired,
-    guardarConsultar: PropTypes.func.isRequired
- }
+ 
 export default Formulario;
