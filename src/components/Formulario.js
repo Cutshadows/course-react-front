@@ -1,90 +1,52 @@
-import React, {useEffect, useState} from 'react';
-import styled from '@emotion/styled';
-import useMoneda from 'hook/useMoneda'; 
-import useCriptoMoneda from 'hook/useCriptoMoneda';
-import axios from 'axios'; 
-import Error from './Error';
-const Buttom= styled.input`
-    margin-top:20px;
-    font-weight:bold;
-    font-size: 20px;
-    padding: 10px;
-    background-color: #66A2FE;
-    border:none;
-    width:100%;
-    border-radius:10px;
-    color: #FFF;
-    transition: background-color .3s ease;  
-    &::hover{
-        background-color:#326AC0;
-        cursor:pointer;
-    }
-`;
+import React from 'react';
+import 'style/Formulario.module.scss';
+import useSelect from 'hook/useSelect';
+import PropTypes from 'prop-types';
 
-const Formulario = ({guardarMoneda, guardarCriptoMoneda}) => {
-    //state del listado de criptomonedas
 
-    const [listacripto, saveCriptomonedas]=useState([]);
-    const [error, guardarError]=useState(false);
 
-    const MONEDAS =[
-        {codigo: 'USD', nombre:'Dolar de Estados Unidos'},
-        {codigo: 'CL', nombre:'Pesos Chilenos'},
-        {codigo: 'MXN', nombre:'Peso Mexicano'},
-        {codigo: 'EUR', nombre:'EURO '},
-        {codigo: 'GBP', nombre:'Libra Esterlina'},
-    ];
-    
-    
-    //use moneda custom hooks
-    
-    const [
-        moneda, 
-        SelectMonedas]=useMoneda('Elige tu moneda', '', MONEDAS ); 
-    
-    // use cripto moneda hook    
-    const [
-        criptomoneda, 
-        SelectCripto]=useCriptoMoneda('Elige tu criptomoneda', '', listacripto);
+const Formulario = ({saveCategory}) => {
+    const OPCTIONS=[
+        {value: 'general', label: 'General'},
+        {value: 'business', label: 'Negocios'},
+        {value: 'entertaiment', label: 'Entretenimiento'},
+        {value: 'health', label: 'Salud'},
+        {value: 'science', label: 'Ciencia'},
+        {value: 'sports', label: 'Deportes'},
+        {value: 'technology', label: 'Tecnología'}
+    ]
+    //custom hooks
+    const [categoria, SelectNoticias]=useSelect('general', OPCTIONS);
 
-    //Ejecutar llamada a la api
-    useEffect(()=>{
-      const consultarAPI= async ()=>{
-            const url=`https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD`;
-            const result= await axios.get(url);
 
-            saveCriptomonedas(result.data.Data);
-        }
-        consultarAPI(); 
-    }, []);
-
-    const cotizarMoneda=e=>{
+    //submit al form, pasar categoria a app
+    const buscarNoticias=e=>{
         e.preventDefault();
-
-        //validar moneda
-        if(moneda==='' || criptomoneda===''){
-            guardarError(true);
-            return;
-        }
-        guardarError(false);
-        guardarMoneda(moneda);
-        guardarCriptoMoneda(criptomoneda);
+        saveCategory(categoria);
     }
+
     return ( 
-        <form 
-            onSubmit={cotizarMoneda}>
-            { error? 
-                <Error mensaje='Todos los campos son obligatorios'/>
-                : null
-            }
-            <SelectMonedas />
-            <SelectCripto />
-            <Buttom
-                type="submit"
-                value="Calcular" />
-        </form>
+        <div className="row">
+            <div className="col s12 m8 offset-m2">
+                <form
+                    onSubmit={buscarNoticias}>
+                    <h2 className="heading">Encuentra Noticias por categoría</h2>
+
+                    <div className="input-field col s12">
+                        <SelectNoticias />
+                        <input 
+                            className="btn_block btn-large amber darken-2" /* `${styles.btn_block}` */
+                            value="Buscar"
+                            type="submit"/>
+                    
+                    </div>
+                </form>
+            </div>
+        </div>
 
      );
 }
- 
+Formulario.propTypes={
+    saveCategory:PropTypes.func.isRequired
+}
 export default Formulario;
