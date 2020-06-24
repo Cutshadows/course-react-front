@@ -1,36 +1,92 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import 'style/App.scss';
-import Header from 'component/Header';
-import Formulario from '../components/Formulario';
-import ListadoNoticias from '../components/ListadoNoticias';
+import React, { Fragment, useState, useEffect} from 'react';
+import Formulario from 'component/Formulario';
+import ListadoImagenes from '../components/ListadoImagenes';
 
 
 //el hooks es unicamente una funcion, muchas veces cuando creas tu propio hook debe tener nuestro propio state
 const App=()=>{
-    //definir ctegoria
-    const [category, saveCategory]=useState('');
-    const [news, saveNews]=useState([]);
-    useEffect(()=>{
-        const consultarAPI=async()=>{
-            const url=`https://newsapi.org/v2/top-headlines?country=co&category=${category}&apiKey=22a78bfdcb744abcb8403263f48a17ca`;
-            const respuesta=await fetch(url);
-            const noticias= await respuesta.json();
+    const [busqueda, guardarBusqueda] = useState('');
+    const [imagenes, guardarImagenes] = useState([]);
+    const [paginaactual, guardarPaginaActual] = useState(1);
+    const [totalpaginas, guardarTotalPaginas] = useState(1);
 
-            saveNews(noticias.articles);
+    useEffect(()=>{
+        const consultarAPI=async ()=>{
+            if(busqueda==='') return;
+            const imagesxPagina=30;
+            const key="17153546-f652282c541193918b7f6895a";
+            const url=`https://pixabay.com/api/?key=${key}&q=${busqueda}&per_page=${imagesxPagina}&page=${paginaactual}`;
+            
+            const respuestaPixabay=await fetch(url);
+            const resultadoPixabay=await respuestaPixabay.json();
+
+            guardarImagenes(resultadoPixabay.hits);
+            console.log(resultadoPixabay);
+
+            const calcularTotalPaginas=Math.ceil(resultadoPixabay.totalHits/imagesxPagina);
+            guardarTotalPaginas(calcularTotalPaginas);
+
+            const jumbotron=document.querySelector('.jumbotron');
+            jumbotron.scrollIntoView({behavior:'smooth'});
         }
         consultarAPI();
-    }, [category])
-        return(
-        <Fragment >
-             <Header 
-             titulo="Buscador de Noticias"/>
-            <div className="container white">
-               <Formulario 
-               saveCategory={saveCategory}/>
-               <ListadoNoticias news={news} />
-            </div>
 
+
+    }, [busqueda, paginaactual]);
+
+    const paginaAnterior=()=>{
+        const nuevaPaginaActual=paginaactual-1;
+        if(nuevaPaginaActual===0)return;
+        guardarPaginaActual(nuevaPaginaActual);
+    }
+    const paginaSiguiente=()=>{
+        const nuevaPaginaActual=paginaactual+1;
+        if(nuevaPaginaActual>totalpaginas)return;
+        guardarPaginaActual(nuevaPaginaActual);
+    }
+    return(
+        <Fragment>
+            <div className="container">
+                <div className="jumbotron">
+                    <p className="lead text-center">
+                        Buscador de Imagenes
+                    </p>
+                    <Formulario 
+                        guardarBusqueda={guardarBusqueda}/>
+                </div>
+                <div className="row justify-content-center">
+                    <ListadoImagenes imagenes={imagenes}/>
+                </div>
+                {
+                    (paginaactual===1)?
+                    null:
+                    (
+                        <button 
+                            type="button"
+                            className="btn btn-info mr-1"
+                            onClick={paginaAnterior}>
+                                &laquo;Anterior
+                        </button>
+                    )
+                }
+
+                {
+                    (paginaactual===totalpaginas)?
+                    null:
+                    (
+                        <button 
+                        type="button"
+                        className="btn btn-info"
+                        onClick={paginaSiguiente}>
+                        Siguiente  &raquo;
+                        </button>
+                    )
+                }
+                
+            </div>
         </Fragment>
-    )};
+    );    
+
+};
 
 export default App;

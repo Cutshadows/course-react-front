@@ -1,52 +1,48 @@
-import React from 'react';
-import 'style/Formulario.module.scss';
-import useSelect from 'hook/useSelect';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import Error from './Error';
 
 
 
-const Formulario = ({saveCategory}) => {
-    const OPCTIONS=[
-        {value: 'general', label: 'General'},
-        {value: 'business', label: 'Negocios'},
-        {value: 'entertaiment', label: 'Entretenimiento'},
-        {value: 'health', label: 'Salud'},
-        {value: 'science', label: 'Ciencia'},
-        {value: 'sports', label: 'Deportes'},
-        {value: 'technology', label: 'Tecnología'}
-    ]
-    //custom hooks
-    const [categoria, SelectNoticias]=useSelect('general', OPCTIONS);
+const Formulario = ({guardarBusqueda}) => {
 
-
-    //submit al form, pasar categoria a app
-    const buscarNoticias=e=>{
+    const [termino, guardarTermino]=useState('');
+    const [error, guardarError]=useState(false);
+    const buscarImagenes=e=>{
         e.preventDefault();
-        saveCategory(categoria);
+        //validar 
+        if(termino.trim()===''){
+            guardarError(true);
+            return;
+        }
+        guardarError(false);
+
+        //enviar el termino de busqueda hacia el componente principal
+        guardarBusqueda(termino);
     }
-
     return ( 
-        <div className="row">
-            <div className="col s12 m8 offset-m2">
-                <form
-                    onSubmit={buscarNoticias}>
-                    <h2 className="heading">Encuentra Noticias por categoría</h2>
+        <form 
+            onSubmit={buscarImagenes}>
+            <div className="row">
+                <div className="form-group col-md-8">
+                    <input 
+                        type="text" 
+                        className="form-control form-control-lg"
+                        placeholder="Buscar una imagen, ejemplo: café"
+                        onChange={e=>guardarTermino(e.target.value)}/>
 
-                    <div className="input-field col s12">
-                        <SelectNoticias />
-                        <input 
-                            className="btn_block btn-large amber darken-2" /* `${styles.btn_block}` */
-                            value="Buscar"
-                            type="submit"/>
-                    
-                    </div>
-                </form>
+                </div>
+                <div className="form-group col-md-4">
+                    <input 
+                        type="submit" 
+                        className="btn btn-lg btn-danger btn-block text-uppercase" 
+                        value="Buscar"
+                        />
+                        
+                </div>
             </div>
-        </div>
+            {error? <Error mensaje="Agrega un término de busqeda"/>:null}
+        </form>
 
      );
-}
-Formulario.propTypes={
-    saveCategory:PropTypes.func.isRequired
 }
 export default Formulario;
