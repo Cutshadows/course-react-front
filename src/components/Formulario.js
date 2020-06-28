@@ -1,46 +1,67 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import Error from './Error';
+import { CategoriaContext } from '../context/CategoriaContext';
+import { RecetasContext } from '../context/RecetasContext';
 
 
+const Formulario = () => {
+    const [busqueda, guardarBusqueda]=useState({
+        nombre:'',
+        categoria:''
+    });
 
-const Formulario = ({guardarBusqueda}) => {
+    const {categorias}=useContext(CategoriaContext);
+    const {busquedaRecetas, guardarConsultar}=useContext(RecetasContext);
 
-    const [termino, guardarTermino]=useState('');
-    const [error, guardarError]=useState(false);
-    const buscarImagenes=e=>{
-        e.preventDefault();
-        //validar 
-        if(termino.trim()===''){
-            guardarError(true);
-            return;
-        }
-        guardarError(false);
+    //funcion para leer los contenidos
 
-        //enviar el termino de busqueda hacia el componente principal
-        guardarBusqueda(termino);
+    const obtenerDatosRecetas=e=>{
+        guardarBusqueda({
+            ...busqueda,
+            [e.target.name]: e.target.value
+        })
     }
     return ( 
         <form 
-            onSubmit={buscarImagenes}>
+            onSubmit={e=>{
+                e.preventDefault();
+                busquedaRecetas(busqueda);
+                guardarConsultar(true);
+            }}
+            className="col-12">
+            <fieldset className="text-center">
+                <legend>Busca bebida por Categoría</legend>
+            </fieldset>
             <div className="row">
-                <div className="form-group col-md-8">
+                <div className="col-md-4">
                     <input 
-                        type="text" 
-                        className="form-control form-control-lg"
-                        placeholder="Buscar una imagen, ejemplo: café"
-                        onChange={e=>guardarTermino(e.target.value)}/>
-
+                        type="text"
+                        name="nombre"
+                        className="form-control"
+                        placeholder="Buscar por ingrediente"
+                        onChange={obtenerDatosRecetas}/>
                 </div>
-                <div className="form-group col-md-4">
+                <div className="col-md-4">
+                    <select 
+                        name="categoria" 
+                        className="form-control"
+                        onChange={obtenerDatosRecetas}
+                    >
+                    <option value="">---- Selecciona Categoría ----</option>
+                    {categorias.map(categoria=>(
+                        <option 
+                        key={categoria.strCategory} 
+                        value={categoria.strCategory} >{categoria.strCategory}</option>
+                    ))}
+                    </select>
+                </div>
+                <div className="col-md-4">
                     <input 
-                        type="submit" 
-                        className="btn btn-lg btn-danger btn-block text-uppercase" 
-                        value="Buscar"
-                        />
-                        
+                    type="submit" 
+                    className="btn btn-block btn-primary"
+                    value="Buscar Recetas"/>
                 </div>
             </div>
-            {error? <Error mensaje="Agrega un término de busqeda"/>:null}
         </form>
 
      );
